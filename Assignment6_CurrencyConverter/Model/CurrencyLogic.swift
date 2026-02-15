@@ -21,51 +21,45 @@ struct CurrencyLogic {
         "NZD": 1.66
     ]
  
-    
     mutating func setEurSwitch(_ switchValue: Bool) {
-        if switchValue {
-            eurSwitch = true
-        } else {
-            eurSwitch = false
-        }
+        eurSwitch = switchValue
     }
 
     mutating func setJpySwitch(_ switchValue: Bool) {
-        if switchValue {
-            jpySwitch = true
-        } else {
-            jpySwitch = false
-        }
+        jpySwitch = switchValue
     }
     
     mutating func setGbpSwitch(_ switchValue: Bool) {
-        if switchValue {
-            gbpSwitch = true
-        } else {
-            gbpSwitch = false
-        }
+        gbpSwitch = switchValue
     }
     
     mutating func setNzdSwitch(_ switchValue: Bool) {
-        if switchValue {
-            nzdSwitch = true
-        } else {
-            nzdSwitch = false
-        }
+        nzdSwitch = switchValue
     }
-    
-    
- 
-    
     
     func getConvertedValue(_ usdAmount: Int, currencyCode: String, isSwitchOn: Bool) -> String {
         guard isSwitchOn, let conversionRate = rates[currencyCode] else {
             return ""
         }
-        
         let result = Double(usdAmount) * conversionRate
-        return String(format: "%.2f", result)
+        
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 2
+        
+        return formatter.string(from: NSNumber(value: result)) ?? ""
     }
     
+    func getAllConvertedValues(for usdAmount : Int) -> [String: String] {
+        return [
+            "USD": "\(usdAmount)",
+            "EUR": getConvertedValue(usdAmount, currencyCode: "EUR", isSwitchOn: eurSwitch),
+            "JPY": getConvertedValue(usdAmount, currencyCode: "JPY", isSwitchOn: jpySwitch),
+            "GBP": getConvertedValue(usdAmount, currencyCode: "GBP", isSwitchOn: gbpSwitch),
+            "NZD": getConvertedValue(usdAmount, currencyCode: "NZD", isSwitchOn: nzdSwitch)
+        ]
+    }
+  
     
 }

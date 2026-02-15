@@ -8,13 +8,9 @@
 import UIKit
 
 class ViewController: UIViewController {
-
     
     @IBOutlet weak var USD: UITextField!
-    
     @IBOutlet weak var errorLabel: UILabel!
-    
-
     
     var currencyLogic = CurrencyLogic()
     
@@ -40,32 +36,29 @@ class ViewController: UIViewController {
         currencyLogic.setNzdSwitch(sender.isOn)
     }
     
-    
     @IBAction func convert(_ sender: UIButton) {
         guard let inputValue = USD.text,  let usdAmt = Int(inputValue) else{
             errorLabel.text = "Error: Integer Input Only"
             errorLabel.isHidden = false
             return
         }
-        
         errorLabel.isHidden = true
         
         self.performSegue(withIdentifier: "toConvertedAmount", sender: self)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
         if segue.identifier == "toConvertedAmount" {
             let navigation = segue.destination as! ConvertedAmountView
             let usdInt = Int(USD.text!) ?? 0
             
-            navigation.usdValue = "\(usdInt)"
-            navigation.eurValue = currencyLogic.getConvertedValue(usdInt, currencyCode: "EUR", isSwitchOn: currencyLogic.eurSwitch)
-            navigation.jpyValue = currencyLogic.getConvertedValue(usdInt, currencyCode: "JPY", isSwitchOn: currencyLogic.jpySwitch)
-            navigation.gbpValue = currencyLogic.getConvertedValue(usdInt, currencyCode: "GBP", isSwitchOn: currencyLogic.gbpSwitch)
-            navigation.nzdValue = currencyLogic.getConvertedValue(usdInt, currencyCode: "NZD", isSwitchOn: currencyLogic.nzdSwitch)
+            let data = currencyLogic.getAllConvertedValues(for: usdInt)
             
+            navigation.usdValue = data["USD"] ?? ""
+            navigation.eurValue = data["EUR"] ?? ""
+            navigation.jpyValue = data["JPY"] ?? ""
+            navigation.gbpValue = data["GBP"] ?? ""
+            navigation.nzdValue = data["NZD"] ?? ""
         }
     }
     
@@ -73,6 +66,7 @@ class ViewController: UIViewController {
         view.endEditing(true)
         super.touchesBegan(touches, with: event)
     }
+    
     
 }
 
